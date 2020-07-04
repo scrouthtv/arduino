@@ -10,5 +10,9 @@ void setup() {
 }
 
 void loop() {
-  Serial.println(analogRead(POT));
+  Serial.print(analogRead(POT));
+  Serial.print("  ");
+  Serial.print(digitalRead(BT1));
+  Serial.print("  ");
+  Serial.println(digitalRead(BT2));
 }

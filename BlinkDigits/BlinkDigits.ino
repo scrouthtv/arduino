@@ -19,6 +19,14 @@
 
 #define POT   2 // potentiometer on PC2 (A2)
 
+#define CT 3200 // cycle time for brightness
+
+#define BRG   3 // photo resistor on PC3 (A3)
+// this setup: +5V - LDR07 - 5kOhm - 0V
+// results in voltages ranging from
+// 20 (in literal darkness) to
+// 800 (shining at the sensor with a lamp)
+
 byte one = 0b10101010; // the leftmost digit
 byte two = 0b01010101;
 byte thr = 0b11001100;
@@ -43,47 +51,78 @@ void setup() {
   digitalWrite(CTG, LOW);
   digitalWrite(CTP, LOW);
 
-  randomSeed(analogRead(5));
+  digitalWrite(AN1, HIGH);
+  digitalWrite(AN2, HIGH);
+  digitalWrite(AN3, HIGH);
+  digitalWrite(AN4, HIGH);
+  
+  //randomSeed(analogRead(5));
 
   one = displayDigit(8) | 0b1;
   two = displayDigit(2);
   thr = displayDigit(4);
   fur = displayDigit(9);
+
+  //Serial.begin(9600);
 }
 
 void loop() {  
   digitalWrite(AN1, LOW);
-  digitalWrite(AN2, HIGH);
-  digitalWrite(AN3, HIGH);
-  digitalWrite(AN4, HIGH);
+  //digitalWrite(AN2, HIGH);
+  //digitalWrite(AN3, HIGH);
+  //digitalWrite(AN4, HIGH);
   illuminateCathodes(one);
-  delay(delay());
+  delayMicroseconds(brightDelay());
   digitalWrite(AN1, HIGH);
+  delayMicroseconds(darkDelay());
+  
+  //digitalWrite(AN1, HIGH);
   digitalWrite(AN2, LOW);
-  digitalWrite(AN3, HIGH);
-  digitalWrite(AN4, HIGH);
+  //digitalWrite(AN3, HIGH);
+  //digitalWrite(AN4, HIGH);
   illuminateCathodes(two);
-  delay(delay());
-  digitalWrite(AN1, HIGH);
+  delayMicroseconds(brightDelay());
   digitalWrite(AN2, HIGH);
+  delayMicroseconds(darkDelay());
+  
+  //digitalWrite(AN1, HIGH);
+  //digitalWrite(AN2, HIGH);
   digitalWrite(AN3, LOW);
-  digitalWrite(AN4, HIGH);
+  //digitalWrite(AN4, HIGH);
   illuminateCathodes(thr);
-  delay(delay());
-  digitalWrite(AN1, HIGH);
-  digitalWrite(AN2, HIGH);
+  delayMicroseconds(brightDelay());
   digitalWrite(AN3, HIGH);
+  delayMicroseconds(darkDelay());
+  
+  //digitalWrite(AN1, HIGH);
+  //digitalWrite(AN2, HIGH);
+  //digitalWrite(AN3, HIGH);
   digitalWrite(AN4, LOW);
   illuminateCathodes(fur);
-  delay(delay());
+  delayMicroseconds(brightDelay());
+  digitalWrite(AN4, HIGH);
+  delayMicroseconds(darkDelay());
 }
 
+int brightness() {
+  int brightness = analogRead(BRG);
+  if (brightness < 3) return 3;
+  if (brightness > 799) return 799;
+  return brightness;
+}
+
+/**
+ * Returns microseconds
+ */
 int brightDelay() {
-  return 1;
+  return ((4 * brightness()) % CT);
 }
 
+/**
+ * Returns microseconds
+ */
 int darkDelay() {
-  return 1;
+  return CT - ((4 * brightness()) % CT);
 }
 
 int delay() {
