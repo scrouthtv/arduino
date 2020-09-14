@@ -115,14 +115,14 @@ int brightness() {
  * Returns microseconds
  */
 int brightDelay() {
-  return ((4 * brightness()) % CT);
+  return (4 * brightness());
 }
 
 /**
  * Returns microseconds
  */
 int darkDelay() {
-  return CT - ((4 * brightness()) % CT);
+  return CT - (4 * brightness());
 }
 
 int delay() {

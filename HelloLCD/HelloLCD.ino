@@ -40,28 +40,58 @@
 
 */
 
+
+#define TMP 2 // LM335Z on PC2 (analog 2)
+
 // include the library code:
 #include <LiquidCrystal.h>
+
+#include <math.h>
 
 // initialize the library by associating any needed LCD interface pin
 // with the arduino pin number it is connected to
 // d4..d7 connected to PB4..PB1 (digital 12..9)
 // RS connected to PB5 (digital 13)
 // EN connected to PD4 (digital 4)
-const int rs = 13, en = 4, d4 = 12, d5 = 11, d6 = 10, d7 = 9;
-LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+const int rs = 13, en = 4, d4 = 9, d5 = 10, d6 = 11, d7 = 12;
+const int d0 = 8, d1 = 7, d2 = 6, d3 = 5;
+LiquidCrystal lcd(rs, en, d0, d1, d2, d3, d4, d5, d6, d7);
+
+double last = -1;
 
 void setup() {
   // set up the LCD's number of columns and rows:
   lcd.begin(16, 2);
   // Print a message to the LCD.
   lcd.print("hello, world!");
+
+  Serial.begin(9600);
 }
 
 void loop() {
   // set the cursor to column 0, line 1
   // (note: line 1 is the second row, since counting begins with 0):
-  lcd.setCursor(0, 1);
   // print the number of seconds since reset:
-  lcd.print(millis() / 1000);
+  double orig = temparature(analogRead(TMP));
+  Serial.print("rounding ");
+  Serial.print(orig);
+  Serial.print(" to ");
+  double temp = round(orig * 10.0) / 10.0;
+  Serial.println(temp);
+  Serial.println(orig * 10.0);
+  if (temp != last) {
+    lcd.setCursor(3, 1);
+    lcd.print(temp);
+    lcd.print(" ");
+    lcd.print((char) 0b11011111);
+    lcd.print("C");
+    last = temp;
+  }
+  delay(10);
+}
+
+double temparature(int analog) {
+  double volts = 5.0 * analog / 1023.0;
+  //Serial.println(volts);
+  return 25 + ((volts - 2.98) / .01);
 }
