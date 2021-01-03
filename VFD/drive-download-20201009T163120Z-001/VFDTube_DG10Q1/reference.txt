@@ -1,0 +1,12 @@
+FUTABA
+DG10Q1 / 3GS
+    E D C DP
+FIL          FIL
+    F G A B
+
+Uf = 1,0 V
+R = 8 ohm
+I typ 34 mA, max 45 mA
+
+
+Ug = 6 .. 13 .. 36 V

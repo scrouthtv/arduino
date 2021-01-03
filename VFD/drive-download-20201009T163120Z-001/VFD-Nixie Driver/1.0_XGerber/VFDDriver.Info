@@ -1,0 +1,30 @@
+CAM-Ausgabe für AktuellesProjekt VFDDriver.T3001
+Ausgabe am 20. Aug 2019, 23:23h
+AktuellesProjekt erzeugt mit TARGET 18.9.0.51 design station
+Ausgabe erzeugt mit TARGET 3001! V18.9.0.51
+AktuellesProjekt von TARGET NC-Version: Kommerzielle Nutzung ist strafbar!
+LIEFERANSCHRIFT:
+  
+  
+  
+  D- 
+  Tel: 
+  FAX: 
+  eMail: 
+Größe der Platine: 77,529375 mm x 33,0075 mm
+
+Folgend die Beschreibung der erzeugten Dateien:
+
+VFDDriver.Top = 16 = Kupfer oben L1   ( *.Top )
+VFDDriver.Bot = 2 = Kupfer unten L2   ( *.Bot )
+VFDDriver.Tool = Bohrerliste
+VFDDriver.Drill = Durchkontaktierte Bohrungen
+VFDDriver.Outline = 23 = Platinen-Umriss   ( *.Outline )
+VFDDriver.StopTop = 18 = Lötstoppmaske oben   ( *.StopTop )
+VFDDriver.StopBot = 4 = Lötstoppmaske unten   ( *.StopBot )
+VFDDriver.PosiTop = 21 = Bestückungsdruck oben   ( *.PosiTop )
+VFDDriver.PosiBot = 7 = Bestückungsdruck unten   ( *.PosiBot )
+VFDDriver.PasteTop = 19 = Lötpaste oben   ( *.PasteTop )
+VFDDriver.Apr = TARGET 3001! Blendenliste
+VFDDriver.Whl = Eagle kompatible Blendenliste
+

@@ -1,0 +1,208 @@
+//#######################################################################################################################################################
+/*
+ * Sketch for testing / debugging / showcasing the PCA9505DGG-based VFD-Driver Board by Tsamsiyu
+ * 
+ *                             /---5V                                   /---30V+
+ *                             |                    /--------\          |
+ * /---------------\           |          /--------/ A1 A2 A3 \--\      |
+ * |           VCC o-----------o----------o Vl                 Vd o-----/
+ * |               |                      |                       |
+ * | Arduino   SCL o----------------------o SCL    VFD_Driver     |
+ * |           SDA o----------------------o SDA                   |
+ * |               |                      |              Ports0-4 =------// -> Display Grids and Segments
+ * |           GND o---GND          GND---o GND                   |
+ * \---------------/                      \-----------------------/
+ * 
+ *  >> tsamsiyu.yt@gmail.com <<
+ */
+
+      //DeviceAddress 0b0100 A2 A1 A0
+#define DeviceAddress 0b0100000
+
+//See datasheet for more detailed info
+//Available Registers (each 5*8bits)
+// IP  Input Port                   0b000xxx
+// OP  OututPort                    0b001xxx
+// PI  Polarity Inversion           0b010xxx
+// IOC Input/Output Configuration   0b011xxx
+// MSK Mask Interrupt               0b100xxx
+
+//CommandRegister 0b AI 0 D5 D4 D3 D2 D1 D0
+                     //AutoIncrement Flag 
+                     #define AIFlag 0x80
+                          //Port to be accessed
+                          //Input-Registers
+                          #define IP0    0x00
+                          #define IP1    0x01
+                          #define IP2    0x02
+                          #define IP3    0x03
+                          #define IP4    0x04
+                          //(IP 0x05,0x06,0x07 reserved for future use)
+                          //Output-Registers
+                          #define OP0    0x08
+                          #define OP1    0x09
+                          #define OP2    0x0A
+                          #define OP3    0x0B
+                          #define OP4    0x0C
+                          //(OP 0x0D,0x0E,0x0f reserved for future use)
+                          //Polarity Inversion registers
+                          #define PI0    0x10
+                          #define PI1    0x11
+                          #define PI2    0x12
+                          #define PI3    0x13
+                          #define PI4    0x14
+                          //(PI 0x15,0x16,0x17 reserved for future use)
+                          //IO Configuration registers
+                          #define IOC0    0x18
+                          #define IOC1    0x19
+                          #define IOC2    0x1A
+                          #define IOC3    0x1B
+                          #define IOC4    0x1C
+                          //(IOC 0x0D,0x0E,0x0f reserved for future use)
+                          //masked inerrupt registers
+                          #define MSK0    0x20
+                          #define MSK1    0x21
+                          #define MSK2    0x22
+                          #define MSK3    0x23
+                          #define MSK4    0x24
+                          //(MSK 0x25,0x26,0x27 reserved for future use)
+
+#include <Wire.h>
+
+void setup()//#######################################################################################################################################################
+{
+  //initialize I2C Library
+  Wire.begin();
+  //initialize PCA9505
+  InitPCA950x();
+}
+
+byte data[8] =
+{
+  0b00000001,
+  0b00000010,
+  0b00000100,
+  0b00001000,
+  0b00010000,
+  0b00100000,
+  0b01000000,
+  0b10000000,
+};
+
+//cycles all pins of the selected Port as binary counter
+//mainly for functionality check
+void loop()//#######################################################################################################################################################
+{
+  for(int i = 0; i < 8; i++)
+  {
+    PCA950x_WriteOP(1, i);
+    PCA950x_WriteOP(0, (!data[i]));
+  }
+}
+
+
+
+void InitPCA950x()//#######################################################################################################################################################
+{
+//InputRegisters//--------------------------------------------------------------------------------
+
+  //no config needed, read only
+
+//OutputRegisters//--------------------------------------------------------------------------------
+
+  //begin communication with device
+  Wire.beginTransmission(DeviceAddress);
+  
+  //CommandCode for wanted register with auto increment 
+  Wire.write(OP0 | AIFlag);
+
+  //set all 5 output Ports low
+  for(int i = 0; i < 5; i++)
+  {
+    Wire.write(0b00000000);
+  }
+  //terminate communication
+  Wire.endTransmission(true);
+
+//PolarityRegisters//--------------------------------------------------------------------------------
+
+  //begin communication with device
+  Wire.beginTransmission(DeviceAddress);
+  
+  //CommandCode for wanted register with auto increment 
+  Wire.write(PI0 | AIFlag);
+
+  //set all 5 Ports as inverted (MOSFETs inversion)
+  for(int i = 0; i < 5; i++)
+  {
+    Wire.write(0b00000000);
+  }
+  //terminate communication
+  Wire.endTransmission(true);
+
+//DataDirectionRegister//--------------------------------------------------------------------------------
+
+  //begin communication with device
+  Wire.beginTransmission(DeviceAddress);
+  
+  //CommandCode for wanted register with auto increment 
+  Wire.write(IOC0 | AIFlag);
+
+  //set all 5 Ports as output
+  for(int i = 0; i < 5; i++)
+  {
+    Wire.write(0b00000000);
+  }
+  //terminate communication
+  Wire.endTransmission(true);
+
+//InterruptMaskRegister//--------------------------------------------------------------------------------
+
+  //not needen for this
+}
+
+
+
+void PCA950x_WriteOP(int port, byte data)//#######################################################################################################################################################
+{
+  //begin communication with device
+  Wire.beginTransmission(DeviceAddress);
+  
+  switch(port)
+  {
+    case 0:
+      //CommandCode for wanted register with auto increment 
+      Wire.write(OP0 | AIFlag);
+    break;
+
+    case 1:
+      //CommandCode for wanted register with auto increment 
+      Wire.write(OP1 | AIFlag);
+    break;
+
+    case 2:
+      //CommandCode for wanted register with auto increment 
+      Wire.write(OP2 | AIFlag);
+    break;
+
+    case 3:
+      //CommandCode for wanted register with auto increment 
+      Wire.write(OP3 | AIFlag);
+    break;
+
+    case 4:
+      //CommandCode for wanted register with auto increment 
+      Wire.write(OP4 | AIFlag);
+    break;
+
+    default:
+      //nope...
+    break;
+  }
+
+  //write data
+  Wire.write(data);
+
+  //terminate communication
+  Wire.endTransmission(true);
+}
